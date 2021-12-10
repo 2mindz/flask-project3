@@ -1,14 +1,14 @@
 import sqlite3
 import imghdr
 import os
-from flask import Flask, render_template, request, url_for, flash, redirect
+from flask import Flask, render_template, request, url_for, flash, redirect, send_file
 from werkzeug.exceptions import abort
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '12349K2_!4'
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
-app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.txt', '.exe']
+app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.txt', '.exe', '.py', '.php']
 app.config['UPLOAD_PATH'] = 'uploads'
 
 
@@ -87,9 +87,24 @@ def delete(id):
     flash('"{}" was successfully deleted!'.format(post['title']))
     return redirect(url_for('index'))
 
-@app.route('/files')
-def get_files():
-    return render_template('files.html')
+@app.route('/files', defaults={'req_path': ''})
+@app.route('/<path:req_path>')
+def get_files(req_path):
+    BASE_DIR = '/home/ubuntu/blog/uploads'
+    # Joining the base and the requested path
+    abs_path = os.path.join(BASE_DIR, req_path)
+
+    # Return 404 if path doesn't exist
+    if not os.path.exists(abs_path):
+        return abort(404)
+
+    # Check if path is a file and serve
+    if os.path.isfile(abs_path):
+        return send_file(abs_path) 
+
+    # Show directory contents
+    files = os.listdir(abs_path)
+    return render_template('files.html', files=files)
 
 @app.route('/upload')
 def upload():
@@ -102,18 +117,26 @@ def upload_files():
     if filename != '':
         file_ext = os.path.splitext(filename)[1]
         if file_ext not in app.config['UPLOAD_EXTENSIONS']:
-            abort(400)
+            #abort(400)
+            return "Upload Rejected!!!"
         uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
     return render_template('upload.html')
 
-@app.route('/login')
+@app.route('/register', methods=['GET','POST'])
+def register():
+    email = request.form.get("email")
+    username = request.form.get("username")
+    password = request.form.get("password")
+    password2 = request.form.get("password2")
+    return render_template('register.html')
+
+@app.route('/login', methods=['GET','POST'])
 def login():
+    username = request.form.get("username")
+    password = request.form.get("password")
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
     return redirect(url_for('login'))
 
-@app.route('/register')
-def register():
-    return render_template('register.html')

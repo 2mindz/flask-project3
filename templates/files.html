@@ -2,4 +2,13 @@
 
 {% block content %}
     <h1>{% block title %} Securely Uploaded Files {% endblock %}</h1>
+       <ul>
+    {% for file in files %}
+    <li>
+        <a href="{{ (request.path + '/files' if request.path != '/files' else '') + file }}">
+            {{ (request.path + '/files' if request.path != '/files' else '')  + file }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
 {% endblock %}

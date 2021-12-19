@@ -90,6 +90,7 @@ def delete(id):
 @app.route('/files', defaults={'req_path': ''})
 @app.route('/<path:req_path>')
 def get_files(req_path):
+    #https://stackoverflow.com/questions/23718236/python-flask-browsing-through-directory-with-files   Code Snippet provided by vivekagr
     BASE_DIR = '/home/ubuntu/blog/uploads'
     # Joining the base and the requested path
     abs_path = os.path.join(BASE_DIR, req_path)

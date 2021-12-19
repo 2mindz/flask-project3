@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '12349K2_!4'
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
-app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.txt', '.exe', '.py', '.php']
+app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.txt', '.exe', '.pdf', '.docx']
 app.config['UPLOAD_PATH'] = 'uploads'
 
 
